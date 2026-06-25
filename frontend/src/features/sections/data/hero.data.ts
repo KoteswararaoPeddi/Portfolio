@@ -8,8 +8,8 @@ export const HERO: HeroContent = {
   headlineHighlight: "clean code",
   subheading:
     "I'm a frontend developer who builds scalable, user-focused web applications with React, Next.js, and TypeScript.",
-  primaryCta: { label: "View my work", href: "#work" },
-  secondaryCta: { label: "Download CV", href: "/documents/cv.pdf" },
+  primaryCta: { label: "Get in touch", href: "#contact" },
+  secondaryCta: { label: "View my work", href: "#projects" },
   portraitInitials: "KP",
   portraitSrc: "/Me.svg",
 }

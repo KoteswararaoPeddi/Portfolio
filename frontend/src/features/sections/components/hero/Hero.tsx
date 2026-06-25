@@ -5,9 +5,13 @@ import { ArrowRight, Download } from "lucide-react"
 import { Badge } from "@components/ui/badge"
 import { Button } from "@components/ui/button"
 import { Typography } from "@components/ui/typography"
-import { HERO } from "../../data"
+import type { HeroContent } from "../../types/portfolio.types"
 
-export function Hero() {
+type Props = {
+  hero: HeroContent
+}
+
+export function Hero({ hero }: Props) {
   return (
     <section
       id="home"
@@ -27,7 +31,7 @@ export function Hero() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-primary" />
             </span>
-            {HERO.availability}
+            {hero.availability}
           </Badge>
 
           <Typography
@@ -35,25 +39,24 @@ export function Hero() {
             weight="bold"
             className="text-foreground md:text-display-xl md:leading-14 lg:text-display-2xl lg:leading-16"
           >
-            {HERO.headlineLead}
-            <span className="text-primary">{HERO.headlineHighlight}</span>
+            {hero.headlineLead}
+            <span className="text-primary">{hero.headlineHighlight}</span>
           </Typography>
 
           <Typography variant="body-lg" className="max-w-lg tracking-wide text-muted-foreground">
-            {HERO.subheading}
+            {hero.subheading}
           </Typography>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
-            <Link href={HERO.primaryCta.href}>
+            <Link href={hero.primaryCta.href}>
               <Button className="h-12 gap-2 px-6 text-label-lg">
-                {HERO.primaryCta.label}
+                {hero.primaryCta.label}
                 <ArrowRight className="size-5" />
               </Button>
             </Link>
-            <Link href={HERO.secondaryCta.href} download>
+            <Link href={hero.secondaryCta.href}>
               <Button variant="outline" className="h-12 gap-2 px-6 text-label-lg">
-                <Download className="size-5" />
-                {HERO.secondaryCta.label}
+                {hero.secondaryCta.label}
               </Button>
             </Link>
           </div>
@@ -66,19 +69,19 @@ export function Hero() {
             className="absolute inset-0 m-auto size-72 rounded-full bg-primary/30 blur-3xl sm:size-80"
           />
           <div className="relative flex size-72 items-center justify-center overflow-hidden rounded-full border border-border bg-surface shadow-lg sm:size-80">
-            {HERO.portraitSrc ? (
+            {hero.portraitSrc ? (
               <Image
-                src={HERO.portraitSrc}
+                src={hero.portraitSrc}
                 alt="Portrait"
                 fill
                 sizes="(min-width: 640px) 20rem, 18rem"
                 className="object-cover"
                 priority
-                unoptimized
+                unoptimized={hero.portraitSrc.endsWith(".svg")}
               />
             ) : (
               <Typography as="span" variant="display-2xl" weight="bold" className="text-primary">
-                {HERO.portraitInitials}
+                {hero.portraitInitials}
               </Typography>
             )}
           </div>

@@ -1,13 +1,18 @@
 import { cn } from "@lib/utils"
 import { SectionHeading } from "../section-heading"
 import { ExperienceCard } from "./ExperienceCard"
-import { EXPERIENCE, EXPERIENCE_HEADING } from "../../data"
+import type { ExperienceEntry, SectionHeadingContent } from "../../types/portfolio.types"
 
-export function Experience() {
+type Props = {
+  heading: SectionHeadingContent
+  experience: ExperienceEntry[]
+}
+
+export function Experience({ heading, experience }: Props) {
   return (
-    <section id="experience" className="relative overflow-hidden py-24">
-      <div className="mx-auto flex w-[90%] max-w-[1000px] flex-col gap-12">
-        <SectionHeading {...EXPERIENCE_HEADING} />
+    <section className="relative overflow-hidden py-24">
+      <div id="experience" className="mx-auto flex w-[90%] max-w-[1000px] flex-col gap-12">
+        <SectionHeading {...heading} />
 
         <div className="relative">
           {/* center line (left on mobile, centered on desktop) */}
@@ -17,10 +22,10 @@ export function Experience() {
           />
 
           <div className="flex flex-col gap-8">
-            {EXPERIENCE.map((entry, index) => {
+            {experience.map((entry, index) => {
               const onLeft = index % 2 === 0
               return (
-                <div key={entry.role} className="relative md:grid md:grid-cols-2 md:gap-8">
+                <div key={`${entry.role}-${index}`} className="relative md:grid md:grid-cols-2 md:gap-8">
                   {/* timeline node */}
                   <span
                     aria-hidden

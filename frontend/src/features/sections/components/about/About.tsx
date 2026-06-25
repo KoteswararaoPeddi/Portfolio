@@ -4,7 +4,7 @@ import { Code, Layers, Zap } from "lucide-react"
 import { Badge } from "@components/ui/badge"
 import { Card } from "@components/ui/card"
 import { Typography } from "@components/ui/typography"
-import { ABOUT } from "../../data"
+import type { AboutContent } from "../../types/portfolio.types"
 
 // Render-driving map: feature icon key -> lucide component.
 const FEATURE_ICONS = {
@@ -13,7 +13,11 @@ const FEATURE_ICONS = {
   zap: Zap,
 } as const
 
-export function About() {
+type Props = {
+  about: AboutContent
+}
+
+export function About({ about }: Props) {
   return (
     <section id="about" className="relative overflow-hidden py-24">
       <div className="mx-auto grid w-[90%] max-w-[1200px] items-center gap-12 lg:grid-cols-2">
@@ -24,13 +28,14 @@ export function About() {
               aria-hidden
               className="absolute inset-0 rounded-full bg-primary/20 blur-3xl"
             />
-            {ABOUT.imageSrc ? (
+            {about.imageSrc ? (
               <Image
-                src={ABOUT.imageSrc}
+                src={about.imageSrc}
                 alt="About"
                 fill
                 sizes="(min-width: 768px) 26rem, 20rem"
                 className="rounded-full object-cover"
+                unoptimized={about.imageSrc.endsWith(".svg")}
               />
             ) : (
               <Typography
@@ -39,7 +44,7 @@ export function About() {
                 weight="bold"
                 className="relative text-primary"
               >
-                {ABOUT.imageInitials}
+                {about.imageInitials}
               </Typography>
             )}
           </div>
@@ -47,7 +52,7 @@ export function About() {
 
         {/* copy */}
         <div className="flex flex-col items-start gap-6">
-          <Badge>{ABOUT.eyebrow}</Badge>
+          <Badge>{about.eyebrow}</Badge>
 
           <Typography
             as="h2"
@@ -55,11 +60,11 @@ export function About() {
             weight="bold"
             className="text-foreground md:text-display-lg md:leading-10"
           >
-            {ABOUT.heading}
+            {about.heading}
           </Typography>
 
           <div className="flex flex-col gap-4">
-            {ABOUT.paragraphs.map((paragraph, index) => (
+            {about.paragraphs.map((paragraph, index) => (
               <Typography key={index} variant="body-lg" className="max-w-xl text-muted-foreground">
                 {paragraph}
               </Typography>
@@ -67,7 +72,7 @@ export function About() {
           </div>
 
           <div className="grid w-full grid-cols-1 gap-4 pt-4 sm:grid-cols-3">
-            {ABOUT.features.map((feature) => {
+            {about.features.map((feature) => {
               const Icon = FEATURE_ICONS[feature.icon]
               return (
                 <Card key={feature.label} className="p-4 text-center">

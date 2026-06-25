@@ -21,12 +21,12 @@ export function Navbar() {
         </ul>
 
         
-        <Link href="/documents/cv.pdf" download>
+        <a href="/KoteswararaoPeddiResume.pdf" download="Koteswararao-Peddi-Resume.pdf">
           <Button>
             <Download className="h-5 w-5" />
             <span className="text-sm font-medium">Download CV</span>
           </Button>
-        </Link>
+        </a>
 
       </div>
     </nav>

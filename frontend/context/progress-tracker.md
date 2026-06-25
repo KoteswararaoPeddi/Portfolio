@@ -109,8 +109,19 @@ See build-plan.md for the full per-section breakdown.
 - **Contact form:** the only form. React Hook Form + Zod, submitted to a Next.js route handler
   (`app/api/contact/route.ts`) that emails via **Resend** (`resend` SDK). The same
   `contactSchema` validates on both client and server. Env (server-side only): `RESEND_API_KEY`,
-  `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL` (see `.env.example`). This is the one piece of
-  server code in the app; everything else is static.
+  `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL` (see `.env.example`). Contact stays static (no CMS).
+- **CMS (Sanity):** Hero, About, Projects, Experience are editable in **Sanity**. Infra in
+  `src/sanity/` (`env`, `lib/client`, `lib/fetch`, `queries`, `schemaTypes/`, `structure`,
+  `Studio.tsx`); embedded Studio at **`/studio`** (`app/studio/[[...tool]]/page.tsx`, loaded
+  client-only via `dynamic(ssr:false)` — Studio can't be server-evaluated under Turbopack).
+  Data access in `features/sections/api/sections.service.ts` (`getHero/getAbout/getProjects/
+  getExperience`) maps CMS results to the component types and **falls back to the static
+  `data/*` files** if Sanity is unconfigured or empty, so builds never break. Hero + About are
+  **singletons**; Projects + Experience are collections ordered by an `order` field. Section
+  **headings** (Projects/Experience eyebrow+title) stay static. Page fetches all four in
+  parallel (`Promise.all`) and passes props; sections are now presentational. ISR via
+  `revalidate: 60` + cache tags. Images use `image.asset->url` + `next/image`. Public env:
+  `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `NEXT_PUBLIC_SANITY_API_VERSION`.
 - **CV:** served as a static asset (e.g. `public/documents/cv.pdf`), linked from the navbar
   "Download CV" CTA.
 

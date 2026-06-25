@@ -12,13 +12,14 @@ export type SocialLink = {
   icon: "github" | "linkedin" | "x"
 }
 
-// Primary nav links (shown in the navbar).
+// Primary nav links (shown in the navbar). Single page, so these are in-page
+// anchors that match each section's `id`.
 export const navlinks: NavLink[] = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Projects", href: "/projects" },
-  { label: "Experience", href: "/experience" },
-  { label: "Contact", href: "/contact" },
+  { label: "Home", href: "#home" },
+  { label: "About", href: "#about" },
+  { label: "Projects", href: "#projects" },
+  { label: "Experience", href: "#experience" },
+  { label: "Contact", href: "#contact" },
 ]
 
 // Social links shown in the footer.

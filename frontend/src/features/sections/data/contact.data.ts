@@ -14,9 +14,9 @@ export const CONTACT_INFO: ContactInfoItem[] = [
   {
     icon: "mail",
     label: "Email",
-    value: "emmanuel@example.com",
-    href: "mailto:emmanuel@example.com",
+    value: "koteswararaopeddi850@gmail.com",
+    href: "mailto:koteswararaopeddi850@gmail.com",
   },
-  { icon: "phone", label: "Phone", value: "+234 XXX XXX XXXX", href: "#" },
-  { icon: "map", label: "Location", value: "Nigeria", href: "#" },
+  { icon: "phone", label: "Phone", value: "+91 6303874917", href: "tel:+916303874917" },
+  { icon: "map", label: "Location", value: "Pune", href: "#" },
 ]
