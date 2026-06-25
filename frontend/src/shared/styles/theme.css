@@ -182,9 +182,9 @@
    ============================================================ */
 :root {
   /* Primary */
-  --primary:                var(--color-ocean-green-600);
-  --primary-hover:          var(--color-ocean-green-700);
-  --primary-subtle:         var(--color-ocean-green-100);
+  --primary:                var(--color-emerald-teal-500);
+  --primary-hover:          var(--color-emerald-teal-600);
+  --primary-subtle:         var(--color-emerald-teal-100);
   --primary-fg:             #ffffff;
 
   /* Secondary */
@@ -219,19 +219,19 @@
 
   /* Surfaces */
   --background:             var(--color-charcoal-black-900);
-  --surface:                #ffffff;
+  --surface:                #1a2329;
   --surface-raised:         var(--color-neutral-100);
   --surface-overlay:        var(--color-neutral-200);
 
   /* Borders */
-  --border:                 var(--color-neutral-200);
+  --border:                 #242b32;
   --border-strong:          var(--color-neutral-300);
   --input:                  var(--color-neutral-200);
   --ring:                   var(--color-ocean-green-500);
   --radius:                 0.625rem;
 
   /* Text */
-  --foreground:             var(--color-neutral-900);
+  --foreground:             var(--color-neutral-50);
   --muted-foreground:       var(--color-neutral-500);
   --subtle-foreground:      var(--color-neutral-400);
   --on-primary:             #ffffff;
