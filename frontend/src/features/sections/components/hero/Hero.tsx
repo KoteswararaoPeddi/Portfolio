@@ -22,7 +22,7 @@ export function Hero() {
       <div className="mx-auto grid w-[90%] max-w-[1200px] items-center gap-12 lg:grid-cols-2">
         {/* copy */}
         <div className="flex flex-col items-start gap-6">
-          <Badge className="gap-2 bg-surface text-muted-foreground">
+          <Badge variant="status">
             <span className="relative flex size-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-primary" />
