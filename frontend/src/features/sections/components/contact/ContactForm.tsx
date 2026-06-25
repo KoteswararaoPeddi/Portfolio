@@ -11,6 +11,7 @@ import { Textarea } from "@components/ui/textarea"
 import { Card } from "@components/ui/card"
 import { Field } from "@components/ui/field"
 import { Typography } from "@components/ui/typography"
+import { sendContactMessage } from "../../api/contact.service"
 import { contactSchema, type ContactValues } from "../../schemas/contact.schema"
 import { CONTACT_FORM_TITLE } from "../../data"
 
@@ -22,10 +23,15 @@ export function ContactForm() {
     formState: { errors, isSubmitting },
   } = useForm<ContactValues>({ resolver: zodResolver(contactSchema) })
 
-  // No backend yet: acknowledge locally and reset. Swap for a real submit later.
-  const onSubmit = (_values: ContactValues) => {
-    toast.success("Message sent. I'll get back to you soon.")
-    reset()
+  const onSubmit = async (values: ContactValues) => {
+    try {
+      await sendContactMessage(values)
+      toast.success("Message sent. I'll get back to you soon.")
+      reset()
+    } catch (error) {
+      console.error("[ContactForm]", error)
+      toast.error("Could not send your message. Please try again.")
+    }
   }
 
   return (

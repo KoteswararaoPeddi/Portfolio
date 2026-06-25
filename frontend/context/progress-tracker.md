@@ -57,9 +57,10 @@ immediately know what is done, what is in progress, and what is next.
   `data/contact.data.ts`, `schemas/contact.schema.ts`) — `section#contact`: centered
   `SectionHeading` + a 2-col grid. Left: "Send a message" card with a **client** RHF + Zod
   form (Name / Email / Message, shared `Field`/`Input`/`Textarea` primitives), "Send Message"
-  button; no backend yet, so submit shows a sonner toast and resets. Right: "Contact
-  Information" (Email / Phone / Location) with icon wells. `Toaster` mounted in the
-  `(customer)` layout.
+  button. Submits via `api/contact.service.ts` -> **`POST /api/contact`** (App Router route
+  handler) which emails the message through **Resend**; success/error shown via sonner toast,
+  form resets on success. Right: "Contact Information" (Email / Phone / Location) with icon
+  wells. `Toaster` mounted in the `(customer)` layout.
 
 - **Footer** (`src/shared/components/Footer.tsx`) — replaces the stub. Glow + brand (`Logo`) +
   tagline, a row of circular social icon buttons (inline brand glyphs in
@@ -105,8 +106,11 @@ See build-plan.md for the full per-section breakdown.
 - **Theme:** dark only, charcoal/teal — emerald-teal primary, charcoal-black neutrals. No
   `next-themes`, no light mode, no toggle.
 - **Fonts:** Poppins (`next/font/google`).
-- **Contact form:** the only form. React Hook Form + Zod are installed and may be used; there
-  is no submission backend yet, so it is a no-op or `mailto:` until a target is specified.
+- **Contact form:** the only form. React Hook Form + Zod, submitted to a Next.js route handler
+  (`app/api/contact/route.ts`) that emails via **Resend** (`resend` SDK). The same
+  `contactSchema` validates on both client and server. Env (server-side only): `RESEND_API_KEY`,
+  `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL` (see `.env.example`). This is the one piece of
+  server code in the app; everything else is static.
 - **CV:** served as a static asset (e.g. `public/documents/cv.pdf`), linked from the navbar
   "Download CV" CTA.
 
