@@ -1,197 +1,140 @@
 # Progress Tracker
 
-Update this file after every completed feature. Any AI agent reading this should immediately
-know what is done, what is in progress, and what is next.
+Update this file after every completed section/feature. Any AI agent reading this should
+immediately know what is done, what is in progress, and what is next.
 
 ---
 
 ## Current Status
 
-**Phase:** 0/2/7 — Foundation + Home page UI + Admin dashboard UI + backend scaffold + first full-stack admin feature (Add Product)
-**Last completed (Add Product — full-stack, wired):** Built the admin **Add Product** page at
-`app/(admin)/admin/products/new` from `context/designs/Add Product.svg`, **wired end-to-end** to
-`POST /api/products`. Shipped:
-- **Backend extended to fit the design:** Prisma `Product` gained `salePrice?`, `taxIncluded`,
-  `saleStartsAt?`, `saleEndsAt?`, `tags[]`; `ProductVariant` gained `stockStatus` (new enum
-  `StockStatus`) + `isUnlimited`. Migration `add_product_pricing_inventory_fields` applied.
-  `CreateProductDto`/variant DTO extended (variant **`sku` now optional**, auto-generated from
-  slug+colour+index). Added minimal **`GET /api/categories`** (needed for the category dropdown's
-  real FK ids).
-- **Frontend:** installed `react-hook-form` + `zod` + `@hookform/resolvers` + `sonner` (project's
-  first form). New primitives: `Label`, `Textarea`, `Select` (native), `Checkbox`, `Radio`, `Field`;
-  `Toaster` mounted in admin layout; `ApiResponse<T>` shared type added; `.env.local` sets
-  `NEXT_PUBLIC_API_URL=http://localhost:3001/api`.
-- **Feature** `features/admin/products/{api,data,schemas,types,components/add-product}`: RHF+zod form,
-  `FormProvider` sub-cards (Basic Details, Pricing, Inventory, Upload Image, Categories), maps values
-  → `CreateProductBody` → `createProduct()` with toast feedback; Publish vs Save-to-draft.
-- **Verified:** backend `tsc` clean; `GET /categories` + a full `POST /products` (all new fields,
-  auto-SKU, image, relations) returned 201 against the live DB; frontend `tsc` clean; `next build`
-  passes (`/admin/products/new` compiled); headless screenshot matches the SVG (two columns, all
-  sections). Image upload still URL/sample-based (no storage endpoint); endpoint still unguarded.
-**Earlier (backend Phase 2 — create product):** Added the **`POST /api/products`**
-endpoint (`backend/src/products/`). Admin-facing create from the "Add Product" design. Shipped:
-- `products.module.ts` (registered in `app.module.ts`), `products.controller.ts`
-  (`POST /products` → 201, `@ResponseMessage('Product created')`), `products.service.ts`.
-- DTOs (class-validator): `CreateProductDto` with nested `images[]` (URLs only — files are
-  uploaded separately, body carries `url`/`alt`/`position`) and required `variants[]`
-  (`@ArrayMinSize(1)`); `CreateProductImageDto`, `CreateProductVariantDto`.
-- Service: single nested Prisma write (product + images + variants), returns product with
-  `category`/`images`/`variants`. Slug uses caller value or auto-derives from `name`, with
-  `-2/-3…` suffix on collision (explicit duplicate slug → 409). Missing `categoryId` → 404.
-  Prisma `P2002` (slug / variant SKU) translated → 409.
-- **No auth guard yet** — backend has no auth/roles module; marked the spot in the controller
-  where `@UseGuards(JwtAuthGuard, RolesGuard)` + `@Roles(Role.ADMIN)` plug in once auth lands.
-- Verified: `tsc --noEmit` clean. Not yet run against the live DB / not frontend-wired.
-**Earlier (backend Phase 0 scaffold):** Stood up the **NestJS backend** in `backend/`
-(NestJS 11 + Prisma 6, TS strict). Shipped:
-- Project config: `package.json`, `tsconfig`(strict), `nest-cli.json`, `.gitignore`,
-  `.env.example` + `.env` (all env vars from code-standards), `README.md`.
-- `prisma/schema.prisma` — full data model from architecture.md; Prisma client generated.
-  `prisma/seed.ts` — idempotent upserts: 6 furniture categories + sample products/variants/images.
-- NestJS foundation: `main.ts` (global `api` prefix, `ValidationPipe` whitelist+transform,
-  `cookie-parser`, CORS credentials, shutdown hooks); `app.module.ts`; `config/`
-  (`configuration.ts` + `env.validation.ts` via class-validator, `DATABASE_URL` required).
-- `prisma/` `PrismaService` (connects on init) + global `PrismaModule`.
-- `common/`: `ApiResponse<T>` type, global `ResponseInterceptor` + `@ResponseMessage`
-  decorator, global `AllExceptionsFilter` (envelope-shaped errors, no stack leaks).
-- `health/` module → `GET /api/health` (DB ping) for verifiability.
-- DB live: local **PostgreSQL 18** (`postgresql-x64-18`), database `homerio`. First migration
-  `init` applied; seed run (6 categories, 4 products). `DATABASE_URL` in `backend/.env` uses
-  user `postgres`; the `$` in the password is percent-encoded (`%24`) so dotenv/Prisma parse it.
-- Verified: `npm install` clean, `prisma generate` + `migrate dev` + `db:seed` ok, `nest build`
-  + `tsc --noEmit` (incl. seed) clean. Live: `GET /api/health` →
-  `{success, message:"Service healthy", data:{status:"ok", database:"up", uptime}}`;
-  unknown route → `{success:false, message, data:null}` (404) via the exception filter.
-**Earlier (admin dashboard):** Built the **admin dashboard** at `app/(admin)/admin/`
-from `context/designs/Dashboard.svg`. Frontend only, mock data. Shipped:
-- `(admin)/admin` `layout.tsx` (shadcn `SidebarProvider` + `AdminSidebar` + `SidebarInset`
-  + `AdminTopbar`, wrapped in `TooltipProvider`) and `page.tsx` (composes 8 sections).
-- Vendored shadcn `Sidebar` (+ Sheet/Tooltip/Separator/Skeleton/use-mobile) via the CLI;
-  relocated into `src/shared` and fixed `components.json` aliases.
-- New primitives: `Table`, `Avatar`, `Switch`, `Progress`. Admin chrome `AdminSidebar`/
-  `AdminTopbar` + `shared/config/admin-navigation.config.ts`.
-- `features/admin` (per-section components + config + types): summary cards, weekly report
-  (recharts area), realtime users (recharts bar), sales-by-country, transactions table,
-  top products, best-selling table, add-new-product. Added `recharts`.
-- 12 embedded images extracted from the SVG → `public/admin-*.png`; flags use emoji.
-- Verified: `tsc` clean, `next build` (`/admin` prerendered), screenshot-checked all sections.
+**Phase:** 0 Foundation (scaffolded) + Phases 1 Hero, 2 About, 3 Recent Work, 4 Experience,
+6 Contact (done). Phase 5 Testimonials skipped at the developer's request.
 
-**Earlier — Home page UI:** Built the complete storefront **home page** UI from the
-`context/designs` reference (a "Dealport" marketplace landing). Frontend only, mock
-data — not yet wired to the backend. Shipped:
-- `(shop)` route group: `layout.tsx` (Navbar + main + Footer) and `page.tsx` (home).
-  Root `layout.tsx` no longer hardcodes `<main>`; old root `page.tsx` removed.
-- Shared primitives: `Card`, `Input`, `Badge` (token-styled, shadcn pattern).
-- Shared composites: `Logo`, `RatingStars`, `ProductCard`, `Navbar`, `Footer`,
-  `icons/social-icons`. Nav/footer data in `shared/config/navigation.config.ts`.
-- Home feature: `features/home/{components,config,types}` — Hero, FeaturePromoGrid,
-  PromoBannerRow, TrendingProducts, MensCollectionPromo, ExploreCategories,
-  BestSelling (bento), LimitedTimeDeal, Testimonials. Content in
-  `home-content.config.ts`. Catalog types in `shared/types/catalog.ts`.
-- `public/` design images renamed to semantic kebab-case names.
-- Verified: `tsc --noEmit` clean, `next build` succeeds (`/` prerendered static),
-  visually screenshot-checked against the design across all sections.
-**Next:** Wire the home page to the backend (Phase 2 catalog endpoints), then continue
-Phase 0 backend scaffold (NestJS + Prisma) and Phase 1 auth. Add `next-themes` toggle +
-mobile drawer/sheet for the navbar (currently desktop-first).
+**Done / mostly done:**
+
+- **Foundation scaffolded.** Next.js 16 + React 19 + TypeScript (strict), App Router. Tailwind
+  v4 + tw-animate-css; `globals.css` imports `src/shared/styles/theme.css`. shadcn/ui
+  initialized (`components.json`); a set of primitives already vendored under
+  `src/shared/components/ui` (Button, Card, Input, Badge, Label, Textarea, Select, Checkbox,
+  Radio, Field, Switch, Avatar, Table, Progress, Separator, Skeleton, Sheet, Tooltip, Sidebar,
+  Typography). *Not all are used by the portfolio yet — keep what the sections need.*
+- **Theme.** Dark teal token system in `theme.css` — emerald-teal primary, charcoal-black
+  neutrals, dark active theme (see ui-tokens.md). Dark only; no theme toggle.
+- **Fonts.** Poppins via `next/font/google` (`--font-poppins`) wired into the root layout;
+  `html` uses `font-sans`.
+- **Layout shell.** Root `layout.tsx` (metadata, font) + `(customer)` route group:
+  `layout.tsx` composes `Navbar` + `main` + `Footer`; `page.tsx` is the home page (placeholder
+  content for now).
+- **Chrome.** `Logo` (CodeXml badge + "Portfolio" wordmark) and `Navbar` (logo + centered pill
+  nav + "Download CV" CTA) built in `src/shared/components`. Nav links in
+  `src/shared/config/navigation.config.ts`. `Footer` is a stub.
+
+**Done sections:**
+
+- **Hero** (`features/sections/components/hero/Hero.tsx`, `data/hero.data.ts`) — `section#home`:
+  eyebrow pill, headline with teal highlight, subcopy, primary + secondary CTAs, circular
+  portrait with brand glow (initials placeholder until a photo is added via `portraitSrc`).
+  Text uses the `Typography` component (variants, not raw `text-*`).
+- **About / Intro band** (`components/about/About.tsx`, `data/about.data.ts`) — `section#about`:
+  circular profile image + glow (initials placeholder), "About Me" eyebrow, heading, two
+  paragraphs, and a 3-up feature card grid (Clean Code / Fullstack Apps / Performance) with
+  lucide icons. Mirrors the design; `Typography` throughout.
+
+- **Recent Work** (`components/projects/{Projects,ProjectCard}.tsx`, `data/projects.data.ts`) —
+  `section#projects`: centered `SectionHeading` + a `md:grid-cols-2` grid of 4 `ProjectCard`s
+  (image well placeholder, title, description, tech-tag chips, Live Demo / Code links). Card
+  hover lifts + zooms the image. Exact design copy/tags.
+- **SectionHeading** (`components/section-heading/`) — reusable centered eyebrow pill + title
+  (optional teal highlight) + subtitle, driven by `SectionHeadingContent`. For Projects /
+  Experience / Testimonials / Contact.
+
+- **Experience** (`components/experience/{Experience,ExperienceCard}.tsx`,
+  `data/experience.data.ts`) — `section#experience`: centered `SectionHeading` + a vertical
+  timeline (center line on desktop, left line on mobile) with pulsing nodes and alternating
+  cards (period, role, company, description). 4 entries, exact design copy.
+
+- **Contact** (`components/contact/{Contact,ContactForm,ContactInfo}.tsx`,
+  `data/contact.data.ts`, `schemas/contact.schema.ts`) — `section#contact`: centered
+  `SectionHeading` + a 2-col grid. Left: "Send a message" card with a **client** RHF + Zod
+  form (Name / Email / Message, shared `Field`/`Input`/`Textarea` primitives), "Send Message"
+  button; no backend yet, so submit shows a sonner toast and resets. Right: "Contact
+  Information" (Email / Phone / Location) with icon wells. `Toaster` mounted in the
+  `(customer)` layout.
+
+- **Footer** (`src/shared/components/Footer.tsx`) — replaces the stub. Glow + brand (`Logo`) +
+  tagline, a row of circular social icon buttons (inline brand glyphs in
+  `shared/components/icons/SocialIcons.tsx` — lucide has no brand icons), and a "© year name.
+  All rights reserved." bar. Content + socials in `shared/config/navigation.config.ts`. Also
+  fixed `Logo`'s stale `aria-label` (was "Dealport home" -> "Portfolio home").
+
+**Skipped:** Testimonials (`#testimonials`) — per developer request. The nav still links to
+`#testimonials`; revisit if the section is added later.
+
+**Not started:** Polish phase — anchor-scroll nav (navbar links still point at `/about`-style
+routes, should be `#about` etc.), scroll-spy, animations, mobile nav drawer, real assets/CV.
+
+**Next:** Polish — wire the navbar links to section anchors so the page actually scrolls.
 
 ---
 
 ## Progress
 
-See build-plan.md for the full per-feature breakdown.
+See build-plan.md for the full per-section breakdown.
 
-- [~] Phase 0 — Monorepo Foundation (backend live: NestJS + Prisma + PG migrated/seeded; remaining: home page backend wiring + frontend `ApiResponse<T>` type + `next-themes` toggle)
-- [ ] Phase 1 — Authentication
-- [~] Phase 2 — Catalog (Categories + Products) — `POST /api/products` (create) + `GET /api/categories` (list) done; admin **Add Product** page wired end-to-end. Remaining: products list/detail/update/delete, category by-slug + admin CRUD, image upload endpoint, admin guard
-- [ ] Phase 3 — Product Detail
-- [ ] Phase 4 — Cart
-- [ ] Phase 5 — Checkout & Orders
-- [ ] Phase 6 — Account
-- [ ] Phase 7 — Admin
-- [ ] Phase 8 — AI Layer (Claude)
-- [ ] Phase 9 — Polish
+- [~] Phase 0 — Foundation (scaffold, tokens, fonts, layout shell, Navbar/Logo done; Footer stub;
+  anchor-scroll ids pending)
+- [x] Phase 1 — Hero (content + portrait + CTAs; Typography-driven)
+- [x] Phase 2 — Intro band (About section)
+- [x] Phase 3 — Recent Work (Projects grid + ProjectCard + SectionHeading)
+- [x] Phase 4 — Experience (timeline + ExperienceCard)
+- [-] Phase 5 — Testimonials (skipped at developer request)
+- [x] Phase 6 — Contact (form + ContactInfo; RHF + Zod + sonner)
+- [x] Phase 7 — Footer (brand + tagline + socials + copyright)
+- [ ] Phase 8 — Polish
 
 ---
 
 ## Decisions Made During Build
 
-- **Stack:** Next.js (App Router) + Tailwind v4 + shadcn/ui (frontend); NestJS + PostgreSQL + Prisma (backend).
-- **Repo:** monorepo, two folders — `frontend/` and `backend/`.
-- **Auth:** JWT access + refresh as HTTP-only cookies; backend is the authorization source of truth.
-- **AI:** Claude / Anthropic (`@anthropic-ai/sdk`), server-side only — AI shopping assistant (tool use + SSE) and AI admin insights. Default model `claude-opus-4-8`. `ANTHROPIC_API_KEY` never reaches the client.
-- **State:** Zustand for global state; cart store persisted to localStorage (`persist` middleware).
-- **Theming:** light/dark mode via `next-themes`; mobile-responsive.
-- **Payments:** no payment gateway (deliberate) — orders are created as `PENDING`/`UNPAID` and fulfilled manually. No Stripe/PayPal.
+- **Stack:** Next.js 16 (App Router) + React 19 + TypeScript (strict) + Tailwind v4 +
+  shadcn/ui. Frontend only.
+- **No backend:** there is no API, database, or auth. Content is authored in typed `data/`
+  files per section and rendered statically.
+- **Single page:** one route (`/`); navigation is anchor-scroll to section ids, not separate
+  routes.
+- **Theme:** dark only, charcoal/teal — emerald-teal primary, charcoal-black neutrals. No
+  `next-themes`, no light mode, no toggle.
+- **Fonts:** Poppins (`next/font/google`).
+- **Contact form:** the only form. React Hook Form + Zod are installed and may be used; there
+  is no submission backend yet, so it is a no-op or `mailto:` until a target is specified.
+- **CV:** served as a static asset (e.g. `public/documents/cv.pdf`), linked from the navbar
+  "Download CV" CTA.
 
 ---
 
 ## Notes
 
-_Add notes here as the build progresses — workarounds, patterns, anything that differs from the context files._
+_Add notes here as the build progresses — workarounds, patterns, anything that differs from
+the context files._
 
-> **Note on existing scaffold:** the repo currently contains a partial frontend scaffold from
-> setup (a `Button`, the `theme.css` token system, an axios stub, route constants). Reuse or
-> replace these as Phase 0 proceeds; treat build-plan.md as the authoritative target.
+> **Existing scaffold / cleanup:** some pieces still carry placeholder or stale naming from
+> setup — e.g. the home `page.tsx` placeholder content, the `Footer` stub, the navbar links
+> using route-style hrefs (`/about`, `/projects`) instead of anchor ids, and `Logo`'s
+> `aria-label="Dealport home"`. Fix these as the relevant sections are built. The `ui/`
+> directory contains more primitives than the portfolio needs; keep only what sections use.
 
-### Home page build — decisions / deviations
+> **Sections feature structure:** all page sections live in one vertical slice,
+> `src/features/sections/`, with `components/<section>/` (kebab folder + `index.ts` barrel),
+> `data/<section>.data.ts` (typed mock content), and `types/portfolio.types.ts`. `page.tsx`
+> imports public components from `@features/sections/components`. Hero + About are built this way.
 
-- **Brand:** the design reference is a "Dealport" marketplace, so the home page renders that
-  branding (logo, footer) verbatim, while the engineering rules/tokens stay Homerio's.
-- **Where rules beat the design (user said "follow the rules"):**
-  - **No em/en dash** in UI copy — the hero "Discover the Latest Deals –" and the testimonials
-    subtitle were rewritten without the dash.
-  - **Social icons rendered monochrome** (`text-secondary`) — lucide 1.17 ships no brand icons
-    and brand-colour hex is disallowed by the token rules, so inline glyphs inherit a token colour.
-- **"View Details" link** uses the project `purple-600` palette token (no semantic purple token
-  exists) to match the design's purple links — a palette token, not a raw Tailwind colour.
-- **Mobile:** layout is responsive (grids reflow), but the navbar mega-menu and filter sheet/drawer
-  are deferred to a later pass; current navbar is desktop-first. No `next-themes` toggle yet.
-- **Images:** all interactivity (search, add-to-cart, wishlist, carousel arrows) is visual only —
-  components are server components with mock data, to be wired in Phase 2.
+> **Typography component:** section text uses `@components/ui/typography` `Typography` (variant +
+> weight props) rather than raw `text-*` size classes — single source of truth for font sizes.
+> Colour/layout stay on `className`. The eyebrow pill
+> (`rounded-full border border-border bg-primary/10 px-4 py-1.5 text-primary`, `body-sm`) recurs
+> in Hero + About; promote to a shared component when the centered-heading sections need it.
 
-### Home feature — folder restructure + fixes (later pass)
-
-- **Per-section structure:** `features/home/components/` now has one kebab-case folder per
-  section (`hero/`, `feature-promo-grid/`, `promo-banner-row/`, `trending-products/`,
-  `explore-categories/`, `best-selling/`, `limited-time-deal/`, `testimonials/`,
-  `section-heading/`), each with an `index.ts` barrel; `components/index.ts` re-exports the
-  public components (page import unchanged). `home-content.config.ts` was split into
-  per-section files under `config/` + a `config/index.ts` barrel. Convention recorded in
-  code-standards.md. `TestimonialCard` extracted from `Testimonials`.
-- **Button text bug (fixed):** `cn()` used a bare `twMerge` that didn't know the custom
-  type-scale tokens, so it conflated `text-label-*` (size) with `text-*-foreground` (colour)
-  and dropped the colour — buttons rendered dark-on-dark (GET STARTED worst). Fixed by
-  `extendTailwindMerge` registering the custom font sizes in `shared/lib/utils.ts`. Any
-  custom `text-size` token added to `theme.css` must also be added to that list.
-- **Navbar:** changed from `bg-surface/95 backdrop-blur` to opaque `bg-surface shadow-sm`
-  (content was bleeding through on scroll).
-
-### Feature-module convention (adopted for all features)
-
-- Features are self-contained vertical slices; folder vocabulary `components/ api/ hooks/
-  schemas/ data/ config/ constants/ utils/ types/` (only what's used). Three-tier promotion:
-  feature-local → `features/<name>/shared/` → global `src/shared/`. Codified in code-standards.
-- **`data/` vs `config/`:** `data/` = static content the UI renders (`*.data.ts`); `config/`
-  = render-driving maps (icons/labels/options). This reverses the earlier "no data/ bucket".
-- **Migrated existing features:** `home` and `admin` `config/` → `data/` (`*.config.ts` →
-  `*.data.ts`, barrel + imports updated); added feature `shared/` tiers — `home/shared/components/SectionHeading`,
-  `admin/shared/components/{TrendBadge,DetailsButton,StatusDot}`. `tsc` clean, build passes.
-- **Build order:** outside-in — `page.tsx` (stubs) → primitives → components, dev server live.
-  Recorded in code-standards Engineering Mindset.
-- **Feature groups (areas):** both areas are now groups — `features/admin/{dashboard, shared}`
-  (admin-facing) and `features/customer/{home, shared}` (customer-facing); analytics/settings/
-  catalog/… drop in alongside. Dashboard → `admin/dashboard/{components, data}`, group types →
-  `admin/shared/types/admin.types.ts`. Home → `customer/home/{components, data, types}`,
-  `SectionHeading` promoted to `customer/shared/components/` (generic, reusable across customer
-  features). `(shop)`/`(admin)` route groups unchanged. Codified in code-standards. `tsc`/build clean.
-- **Admin chrome → admin area:** `AdminSidebar`/`AdminTopbar` + `admin-navigation.config` moved
-  from global `src/shared` to `features/admin/shared/{components,config}` (admin-only chrome).
-  Rendered once in `(admin)/admin/layout.tsx`, so all `/admin/*` pages share them. `AdminTopbar`
-  title now derives from the route (`ADMIN_NAV`). (Customer `Navbar`/`Footer` still in
-  `src/shared/components` — move to `features/customer/shared/` is the parallel follow-up.)
-- **Customer chrome (partial) + route rename:** `Footer` moved to
-  `features/customer/shared/components/Footer.tsx` (customer-only chrome); **`Navbar` stays in
-  `src/shared/components`** for now (per instruction). Route group `app/(shop)/` renamed to
-  **`app/(customer)/`** (route groups don't change URLs — `/` is unaffected). `navigation.config`
-  still in `shared/config` (used by both Navbar and Footer). `tsc`/build clean.
+> **tailwind-merge / custom type scale:** `cn()` in `src/shared/lib/utils.ts` registers the
+> custom `text-*` size tokens with `extendTailwindMerge` so size classes (`text-h2`) are not
+> conflated with colour classes (`text-foreground`) and dropped. Any new `text-size` token
+> added to `theme.css` must also be added to that list.

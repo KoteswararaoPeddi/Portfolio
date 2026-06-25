@@ -1,137 +1,123 @@
 # Build Plan
 
-A from-scratch plan for Homerio (furniture e-commerce monorepo: Next.js frontend + NestJS/
-Prisma/PostgreSQL backend). **Nothing here is built yet** — every item is unchecked. Mark
-items `[x]` as they land and keep progress-tracker.md in sync.
+A from-scratch plan for the **Portfolio** — a single-page, frontend-only developer
+portfolio (Next.js 16 + React 19 + Tailwind v4 + shadcn/ui). The site has one route (`/`)
+composed of the sections in project-overview.md. Mark items `[x]` as they land and keep
+progress-tracker.md in sync.
 
 ## Core Principle
 
-UI is built with mock data first and verified visually, then wired to the backend. Backend
-endpoints are built per domain and verified (seed data + a quick client call) before the UI
-depends on them. Every feature must be visible and testable before moving on. No invisible
-phases.
+UI is built with **mock content first** and **verified visually** against the design
+(`context/designs/nextdev-egbontech.vercel.app_.png`). Each section authors its content in a
+typed `data/` file, renders from it, and is checked in the running app before moving on.
+Every section must be visible and testable before the next begins. No invisible phases.
+
+There is no backend — nothing is "wired" later. The content files *are* the source of truth.
 
 ---
 
-## Phase 0 — Monorepo Foundation
+## Phase 0 — Foundation
 
-- [ ] Repo layout: `frontend/` (Next.js 16 + React 19 + TS strict) and `backend/` (NestJS + TS strict)
-- [ ] Frontend: Tailwind v4 + tw-animate-css pipeline; `theme.css` tokens wired into `globals.css`
-- [ ] Frontend: shadcn/ui initialized (`components.json`), base primitives in `src/shared/components/ui`
-- [ ] Frontend: `next-themes` ThemeProvider on `<html>` for light/dark mode (+ a theme toggle)
-- [~] Frontend: route-group skeleton — `(shop)` done (layout + home); `(auth)`, `(account)`, `(admin)` pending
-- [ ] Frontend: shared axios instance (`@lib/axios.config`) with `withCredentials` + interceptors
-- [x] Backend: NestJS app with global `ValidationPipe` (whitelist+transform), `cookie-parser`, CORS (credentials), `api` prefix, `@nestjs/config` env validation, `/api/health` check
-- [x] Backend: PostgreSQL (local PG 18) + Prisma; `schema.prisma` from the architecture.md data model; first migration applied (`init`)
-- [x] Backend: `PrismaService` + `PrismaModule` (global); `prisma/seed.ts` run (6 categories + 4 sample products w/ variants + images)
-- [~] Shared `ApiResponse<T>` envelope: backend `ResponseInterceptor` + `@ResponseMessage` + `AllExceptionsFilter` done; frontend `ApiResponse<T>` type pending
+- [x] App scaffolded: Next.js 16 + React 19 + TypeScript (strict); App Router
+- [x] Tailwind v4 + tw-animate-css pipeline; `theme.css` tokens imported by `globals.css`
+- [x] Design tokens: dark teal palette + semantic tokens in `theme.css` (see ui-tokens.md)
+- [x] shadcn/ui initialized (`components.json`); base primitives in `src/shared/components/ui`
+- [x] Fonts: Poppins via `next/font/google` (`--font-poppins`), wired in the root layout
+- [~] Layout shell: root layout + `(customer)` route group (Navbar + main + Footer); home page
+- [x] Shared chrome: `Logo`, `Navbar` built; `Footer` is a stub to be finished
+- [ ] Anchor-scroll section ids agreed (`#home`, `#work`, `#experience`, `#contact`, …) and the
+      navbar links pointed at them (currently route-style hrefs)
 
----
-
-## Phase 1 — Authentication
-
-- [ ] Backend `auth` module: register, login, logout, refresh, me, forgot/reset password
-- [ ] bcrypt password hashing; JWT access + refresh as HTTP-only cookies
-- [ ] `JwtStrategy` (cookie extractor), global `JwtAuthGuard`, `@Public()`, `RolesGuard` + `@Roles`
-- [ ] Frontend auth pages: `/login`, `/register`, `/forgot-password`, `/reset-password` (RHF + Zod)
-- [ ] Frontend `auth.store` (Zustand) + session bootstrap (`GET /auth/me`); silent refresh in interceptor
-- [ ] Client route protection for `(account)` and `(admin)`; redirect rules
+> Dark only — no `next-themes`, no theme toggle. Every surface uses semantic tokens so the
+> dark theme is the single source of truth.
 
 ---
 
-## Phase 2 — Catalog (Categories + Products)
+## Phase 1 — Hero
 
-- [~] Backend `categories` module: list done (`GET /categories`); remaining: by-slug (with children), admin CRUD
-- [~] Backend `products` module: create done (`POST /products`, nested images + variants); remaining: list with filter (category, price, material, colour) + sort + pagination, by-slug with images/variants/category, update/delete
-- [~] Admin **Add Product** page (`/admin/products/new`): built + wired to `POST /products` (RHF + zod + sonner). Remaining: real image upload (currently URL/sample-based), admin auth guard. *(Brought forward from Phase 7 at the developer's request.)*
-- [~] Frontend home page UI: hero, featured categories, featured/new products, promos (mock done; backend wiring pending)
-- [ ] Frontend catalog page: product grid, filter sidebar, sort dropdown, pagination
-- [ ] Frontend category landing → filtered catalog
-- [x] Frontend `ProductCard` (shared composite) + reuse across home/catalog/search (built; reused in home Trending + Limited-Time-Deal)
-- [ ] Search page (`/search`) over products
+- [~] Hero section (`#home`): heading "Building modern web experiences with clean code",
+      supporting line, primary + secondary CTAs, circular portrait with green glow
+- [ ] Hero content in `data/` (heading, subcopy, CTA labels/links, portrait asset)
+- [ ] Responsive: portrait + copy stack on mobile, side by side on desktop
+- [ ] Verified against the design
 
 ---
 
-## Phase 3 — Product Detail
+## Phase 2 — Intro band
 
-- [ ] Frontend product detail page: image gallery + lightbox
-- [ ] Variant picker (colour/material/size) → updates price, stock state, active image
-- [ ] Specs, description, availability messaging
-- [ ] Add to cart (quantity) + add to wishlist
-- [ ] Reviews: backend `reviews` (list + create, one per user per product); frontend list + form (auth-gated)
+- [ ] Intro statement band ("I build scalable and user-focused web applications")
+- [ ] Content in `data/`; typographic treatment on the dark background
+- [ ] Verified against the design
 
 ---
 
-## Phase 4 — Cart
+## Phase 3 — Recent Work
 
-- [ ] Backend `cart` module: get, add item, update quantity, remove item, merge (guest → user)
-- [ ] Frontend `cart.store` (Zustand + `persist`/localStorage): guest cart persistence + live item-count badge
-- [ ] Cart page UI: line items, quantity edit, remove, subtotal/shipping/total
-- [ ] Merge guest cart into account cart on login
-
----
-
-## Phase 5 — Checkout & Orders
-
-- [ ] Backend `orders` module: create order from cart (snapshot price/labels, compute totals, decrement stock, clear cart), list mine, get by orderNumber
-- [ ] Order created as `PENDING` / `UNPAID` — no payment gateway; fulfilled manually (see project-overview.md)
-- [ ] Frontend checkout: choose/enter shipping address, order summary, place order
-- [ ] Order confirmation + status timeline (`/orders/[orderNumber]`)
-- [ ] Backend `addresses` module + frontend address CRUD used by checkout
+- [ ] Section heading "Some of my recent work"
+- [ ] `ProjectCard` composite: thumbnail, title, description, tech tags, demo/source links
+- [ ] Responsive project grid; content authored in `data/` (projects list)
+- [ ] Verified against the design
 
 ---
 
-## Phase 6 — Account
+## Phase 4 — Experience
 
-- [ ] `/account` overview
-- [ ] `/account/orders` — order history (from Phase 5)
-- [ ] `/account/addresses` — saved addresses CRUD (default address)
-- [ ] `/account/profile` — edit profile + change password
-- [ ] `/account/wishlist` — backend `wishlist` module + frontend list/remove
-
----
-
-## Phase 7 — Admin
-
-- [~] `/admin` dashboard: sales summary, recent orders, low-stock (UI built from design, mock data; backend wiring pending)
-- [ ] `/admin/products` — list + create/edit (variants, images, stock, publish/feature)
-- [ ] `/admin/categories` — category management (tree)
-- [ ] `/admin/orders` — order queue + advance status (`PENDING → … → DELIVERED`, `CANCELLED`)
-- [ ] All admin routes guarded server-side with `@Roles(Role.ADMIN)`; client gating for UX
+- [ ] Section heading "Experience that speaks volumes"
+- [ ] Vertical timeline component: role, company, dates, description per entry
+- [ ] Content authored in `data/` (experience entries)
+- [ ] Verified against the design
 
 ---
 
-## Phase 8 — AI Layer (Claude)
+## Phase 5 — Testimonials
 
-- [ ] Backend `assistant` module: Anthropic SDK wired with `ANTHROPIC_API_KEY`; tools `search_products` and `get_order_status` backed by the products/orders services (order tool scoped to the authenticated user)
-- [ ] `POST /assistant/chat` streams responses over SSE; tool-use loop via the SDK tool runner
-- [ ] Frontend chat UI (`"use client"`): floating assistant, renders streamed tokens, links results to product pages
-- [ ] Backend `admin/insights`: aggregate sales/inventory metrics with Prisma → one Claude call → structured insights (sales trends, low-stock alerts, action items), cached
-- [ ] Admin dashboard renders the AI insight cards; graceful fallback if the AI is unavailable
-- [ ] Guardrails: API key server-only, try/catch + `stop_reason` handling, store works without AI
+- [ ] Section heading "What people say about me"
+- [ ] `TestimonialCard`: quote, name, role/company
+- [ ] Testimonials grid/row; content authored in `data/`
+- [ ] Verified against the design
 
 ---
 
-## Phase 9 — Polish
+## Phase 6 — Contact
 
-- [ ] Empty states, loading skeletons, and error states across pages
-- [ ] Responsive pass (mobile catalog, cart, checkout)
-- [ ] Accessibility pass (focus, labels, keyboard nav for gallery/menus)
-- [ ] Seed richer demo data; verify full happy-path: browse → cart → checkout → track
+- [ ] Section heading "Let's build something great"
+- [ ] Contact info / socials block (email, location, social links) from `data/`
+- [ ] Contact form: name, email, message (RHF + Zod **optional** — both installed). No
+      submission backend yet — no-op or `mailto:` until a target is specified
+- [ ] Form states: validation errors, disabled/submitting, success/empty messaging
+- [ ] Verified against the design
 
 ---
 
-## Feature Count
+## Phase 7 — Footer
 
-| Phase                         | Status      |
-| ----------------------------- | ----------- |
-| 0 — Monorepo Foundation       | In progress |
-| 1 — Authentication            | Not started |
-| 2 — Catalog                   | In progress |
-| 3 — Product Detail            | Not started |
-| 4 — Cart                      | Not started |
-| 5 — Checkout & Orders         | Not started |
-| 6 — Account                   | Not started |
-| 7 — Admin                     | Not started |
-| 8 — AI Layer (Claude)         | Not started |
-| 9 — Polish                    | Not started |
+- [ ] Footer: wordmark, compact nav echoing the navbar, social links, copyright
+- [ ] Content from the shared navigation config / `data/`
+- [ ] Verified against the design
+
+---
+
+## Phase 8 — Polish
+
+- [ ] Responsive pass across mobile, tablet, desktop (every section)
+- [ ] Scroll-spy: active section reflected in the navbar; smooth anchor scrolling
+- [ ] Entrance / scroll animations (tasteful, `tw-animate-css`)
+- [ ] Accessibility pass: focus states, labels, keyboard nav, reduced-motion respect
+- [ ] Real assets: portrait, project thumbnails, and the CV (`public/documents/cv.pdf`)
+- [ ] Final visual diff against the design; metadata / favicon / Open Graph
+
+---
+
+## Phase Summary
+
+| Phase                | Status      |
+| -------------------- | ----------- |
+| 0 — Foundation       | In progress |
+| 1 — Hero             | In progress |
+| 2 — Intro band       | Not started |
+| 3 — Recent Work      | Not started |
+| 4 — Experience       | Not started |
+| 5 — Testimonials     | Not started |
+| 6 — Contact          | Not started |
+| 7 — Footer           | Not started |
+| 8 — Polish           | Not started |

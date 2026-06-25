@@ -1,31 +1,35 @@
 # UI Tokens
 
-Design tokens for the **Homerio** storefront, as defined in
-`frontend/src/shared/styles/theme.css` (imported by `app/globals.css`). These are the real,
-in-use tokens — an **ocean-green** primary, **cyprus** (deep teal) secondary, slate neutrals.
-Use these exact tokens throughout; never hardcode hex or use raw Tailwind color classes.
+Design tokens for the **Portfolio**, defined in `frontend/src/shared/styles/theme.css`
+(imported by `app/globals.css`). The palette is an **emerald-teal** primary on a
+**charcoal-black** neutral base — a dark, modern developer-portfolio aesthetic. Use these
+exact tokens throughout; never hardcode hex or use raw Tailwind color classes.
 
 > Source of truth: `src/shared/styles/theme.css`. If a token changes there, update this file.
-> The palette can be re-themed later (it's a clean modern furniture aesthetic today); when it
-> changes, regenerate this doc from `theme.css`.
+> The site is **dark only** — `:root` *is* the active (dark) theme.
 
 ---
 
 ## How It's Structured
 
-`theme.css` has four layers (Tailwind v4 — no `tailwind.config.ts` for tokens):
+`theme.css` has layers (Tailwind v4 — no `tailwind.config.ts` for tokens):
 
-1. **`@theme` foundation** — raw palette scales (`--color-ocean-green-*`, `--color-cyprus-*`,
-   `--color-neutral-*`, plus red/amber/green/blue and a typography scale). These generate
-   utilities like `bg-ocean-green-600`, `text-h2`.
+1. **`@theme` foundation** — raw palette scales and the typography scale. These generate
+   utilities like `bg-emerald-teal-500`, `text-charcoal-black-900`, `text-h2`. The foundation
+   scales present:
+   - `--color-emerald-teal-*` — **primary brand** (base `--color-emerald-teal-500: #20b286`)
+   - `--color-charcoal-black-*` — **neutral / surfaces** (base dark `--color-charcoal-black-900: #0f1418`)
+   - `--color-brand-*` (teal), `--color-neutral-*` (slate)
+   - `--color-red-*`, `--color-amber-*`, `--color-green-*`, `--color-blue-*` (feedback)
+   - `--color-surf-crest-*`, `--color-aqua-spring-*`, `--color-purple-*`, `--color-grey-*`
+     (extra foundation scales, available but not part of the semantic set)
 2. **`:root` semantic layer** — named CSS vars that point at the palette (`--primary`,
-   `--secondary`, `--background`, `--foreground`, `--border`, …) **and** shadcn aliases
-   (`--card`, `--popover`, `--muted`, `--accent`, `--destructive`, `--sidebar-*`).
-3. **`.dark`** — overrides only the semantic vars; shadcn aliases follow automatically through
-   the `var()` chain.
-4. **`@theme inline`** — bridges the semantic vars into Tailwind's `--color-*` namespace so
-   utilities (`bg-primary`, `text-foreground`, `border-border`, `bg-card`, …) are generated.
-   `inline` keeps them referencing the vars so `.dark` overrides apply.
+   `--secondary`, `--background`, `--surface`, `--foreground`, `--border`, `--ring`, …) **and**
+   shadcn aliases (`--card`, `--popover`, `--muted`, `--accent`, `--destructive`,
+   `--sidebar-*`). This is the **dark** theme — its values are the dark surfaces/text below.
+3. **`@theme inline`** — bridges the semantic vars into Tailwind's `--color-*` namespace so
+   utilities (`bg-primary`, `text-foreground`, `border-border`, `bg-card`, …) are generated,
+   keeping them referencing the vars.
 
 ```tsx
 // Correct — generated utility classes
@@ -36,8 +40,8 @@ className="bg-card text-foreground border-border"
 style={{ color: "var(--primary)" }}
 
 // Never — hardcoded hex / raw Tailwind colors
-className="bg-[#3a8858] text-gray-600"
-className="bg-emerald-700"
+className="bg-[#20b286] text-gray-400"
+className="bg-emerald-500"
 ```
 
 For conditional/merged classes, always use `cn` from `@lib/utils`.
@@ -46,36 +50,39 @@ For conditional/merged classes, always use `cn` from `@lib/utils`.
 
 ## Semantic Tokens (use these in components)
 
-| Role                 | Utility examples                                | Light value (via palette)        |
+The active theme is dark. Values below are the resolved dark values.
+
+| Role                 | Utility examples                                | Value (via palette)              |
 | -------------------- | ----------------------------------------------- | -------------------------------- |
-| Primary (brand)      | `bg-primary` `text-primary` `border-primary`    | ocean-green-600 `#3a8858`        |
-| Primary hover        | `bg-primary-hover`                              | ocean-green-700                  |
-| Primary subtle       | `bg-primary-subtle`                             | ocean-green-100                  |
+| Primary (brand)      | `bg-primary` `text-primary` `border-primary`    | emerald-teal-500 `#20b286`       |
+| Primary hover        | `bg-primary-hover`                              | emerald-teal-600 `#17936f`       |
+| Primary subtle       | `bg-primary-subtle`                             | emerald-teal-100 `#d5f5eb`       |
 | On-primary text      | `text-primary-fg`                               | `#ffffff`                        |
-| Secondary            | `bg-secondary` `text-secondary`                 | cyprus-900 `#003037`             |
-| Danger / destructive | `bg-danger` / `bg-destructive`                  | red-600                          |
-| Warning              | `bg-warning`                                    | amber-500                        |
-| Success              | `bg-success`                                    | green-600                        |
-| Info                 | `bg-info`                                       | blue-600                         |
-| Page background      | `bg-background`                                 | neutral-50                       |
-| Surface / card       | `bg-surface` / `bg-card`                        | `#ffffff`                        |
-| Raised surface       | `bg-surface-raised` / `bg-muted`                | neutral-100                      |
-| Foreground text      | `text-foreground` / `text-card-foreground`      | neutral-900                      |
-| Muted text           | `text-muted-foreground`                         | neutral-500                      |
-| Subtle text          | `text-subtle-foreground`                        | neutral-400                      |
-| Border               | `border-border`                                 | neutral-200                      |
-| Strong border        | `border-border-strong`                          | neutral-300                      |
-| Input border         | `border-input`                                  | neutral-200                      |
-| Focus ring           | `ring-ring` / `outline-ring`                    | ocean-green-500                  |
+| Secondary            | `bg-secondary` `text-secondary`                 | charcoal-black-900 `#0f1418`     |
+| Danger / destructive | `bg-danger` / `bg-destructive`                  | red-600 `#dc2626`                |
+| Warning              | `bg-warning`                                    | amber-500 `#f59e0b`              |
+| Success              | `bg-success`                                    | green-600 `#16a34a`              |
+| Info                 | `bg-info`                                       | blue-600 `#2563eb`               |
+| Page background      | `bg-background`                                 | charcoal-black-900 `#0f1418`     |
+| Surface / card       | `bg-surface` / `bg-card`                        | `#1a2329`                        |
+| Raised / muted       | `bg-surface-raised` / `bg-muted`                | a step above `surface`           |
+| Foreground text      | `text-foreground` / `text-card-foreground`      | near-white (neutral-50 `#f8fafc`)|
+| Muted text           | `text-muted-foreground`                         | mid-grey (neutral-500)           |
+| Subtle text          | `text-subtle-foreground`                        | lighter grey (neutral-400)       |
+| Border               | `border-border`                                 | `#242b32`                        |
+| Strong border        | `border-border-strong`                          | a step above `border`            |
+| Input border         | `border-input`                                  | matches the dark border          |
+| Focus ring           | `ring-ring` / `outline-ring`                    | emerald-teal (primary)           |
 
 Each colored role also has `-hover`, `-subtle`, and `-fg` variants (e.g. `bg-danger-subtle`,
-`text-warning-fg`). The dealer/admin **sidebar** has its own `--sidebar-*` family.
+`text-warning-fg`).
 
-> Note on `accent`: the shadcn `--accent` alias maps to the raised surface (neutral-100),
-> matching shadcn's "subtle hover" convention — it is **not** a vivid brand accent. For brand
-> emphasis use `primary` / `secondary`. (The palette also defines `aqua-spring`, `surf-crest`,
-> and `purple` scales in the foundation layer; they're available as `bg-aqua-spring-500` etc.
-> but are not part of the semantic set — prefer semantic tokens.)
+> Note on `accent`: the shadcn `--accent` alias maps to the raised surface, matching shadcn's
+> "subtle hover" convention — it is **not** a vivid brand accent. For brand emphasis use
+> `primary`. The extra foundation scales (`surf-crest`, `aqua-spring`, `purple`, `grey`) are
+> available as raw utilities (`bg-aqua-spring-500`, …) but are **not** part of the semantic set
+> — prefer semantic tokens. There is no `ocean-green` or `cyprus` scale (removed) — do not
+> reference them.
 
 ---
 
@@ -95,9 +102,10 @@ Defined in `@theme` → generates `text-*` size utilities:
 | `text-h5`          | 14px  |  |                   |      |
 | `text-h6`          | 12px  |  |                   |      |
 
-Font family is the default `font-sans` (applied to `html` in `globals.css`). If a brand
-display font is added later, load it via `next/font/google` and wire it into `@theme` —
-document it here.
+Font family is **Poppins**, loaded via `next/font/google` in the root layout and exposed as
+`--font-poppins`; `html` applies `font-sans` in `globals.css`. If `cn()` is used to merge a
+custom `text-*` size token, that token must be registered in the `extendTailwindMerge` list in
+`src/shared/lib/utils.ts` (so a size class is not conflated with a colour class and dropped).
 
 ---
 
@@ -108,28 +116,30 @@ document it here.
 
 ---
 
-## Dark Mode
+## Theme — Dark Only
 
-`@custom-variant dark (&:is(.dark *))` is declared, and `.dark` overrides the semantic vars
-(primary shifts to ocean-green-400, surfaces to neutral-900/950, etc.). The shadcn aliases
-follow automatically through the `var()` chain — so dark mode requires **no** extra alias
-block.
+The portfolio ships a **single dark theme**. `:root` holds the dark surfaces and text
+(`--background` charcoal-black-900 `#0f1418`, `--surface` `#1a2329`, `--border` `#242b32`,
+`--foreground` near-white). There is **no light mode, no theme toggle, and no `next-themes`**.
 
-**Important:** for dark mode to resolve correctly, the `dark` class must sit on the **same
-`<html>` element** as `:root` (the `next-themes` default). There is no theme toggle wired up
-yet — add `ThemeProvider` in `app/layout.tsx` first, then update this note.
+A `@custom-variant dark (&:is(.dark *))` is declared in `globals.css` so any `dark:` utilities
+still resolve, but the app does not toggle themes — every surface should simply use the
+semantic tokens and render correctly on the dark base. Do not introduce light-only colours or
+a toggle.
 
 ---
 
 ## Invariants
 
-- Never hardcode hex in components — use the token utilities (or `var(--token)` when a
-  utility doesn't fit).
-- Never use raw Tailwind color classes (`bg-emerald-700`, `text-gray-600`) — only project tokens.
-- Primary brand is ocean-green (`primary`); secondary is cyprus (`secondary`). Don't swap in
+- Never hardcode hex in components — use the token utilities (or `var(--token)` when a utility
+  doesn't fit). The one sanctioned hex path is a data-driven decorative colour applied via
+  `style={{ … }}` (component chrome still uses tokens).
+- Never use raw Tailwind color classes (`bg-emerald-500`, `text-gray-400`) — only project tokens.
+- Primary brand is emerald-teal (`primary`); `secondary` is charcoal-black. Don't swap in
   Tailwind's built-in green/teal scales.
 - Borders default to `border-border`; use `border-strong` for stronger edges, `border-input`
   for form fields. Never `border-gray-*`.
-- Prefer semantic tokens over raw palette utilities; reach for a raw scale (`bg-ocean-green-200`)
-  only for one-off decorative needs.
+- Prefer semantic tokens over raw palette utilities; reach for a raw scale
+  (`bg-emerald-teal-200`) only for a one-off decorative need.
 - Radius comes from `--radius` via `rounded-*` — don't hardcode pixel radii.
+- Dark only — never author a light-mode-specific colour or add a theme toggle.

@@ -3,22 +3,18 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@lib/utils"
 
+// Brand-subtle chip used for section eyebrows (pill) and tech tags (tag).
 const badgeVariants = cva(
-  "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-label-sm font-semibold whitespace-nowrap",
+  "inline-flex items-center border border-border bg-primary/10 text-primary",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-fg",
-        subtle: "bg-primary-subtle text-primary",
-        secondary: "bg-secondary text-secondary-fg",
-        success: "bg-success-subtle text-success",
-        warning: "bg-warning-subtle text-warning-fg",
-        danger: "bg-danger text-danger-fg",
-        outline: "border border-border text-foreground",
+        pill: "rounded-full px-4 py-1.5 text-body-base",
+        tag: "rounded-md px-2.5 py-1 text-body-sm",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "pill",
     },
   }
 )
@@ -29,11 +25,7 @@ function Badge({
   ...props
 }: React.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
   return (
-    <span
-      data-slot="badge"
-      className={cn(badgeVariants({ variant }), className)}
-      {...props}
-    />
+    <span data-slot="badge" className={cn(badgeVariants({ variant }), className)} {...props} />
   )
 }
 

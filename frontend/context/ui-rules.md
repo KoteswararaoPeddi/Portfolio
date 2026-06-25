@@ -1,95 +1,94 @@
 # UI Rules
 
-How Homerio's UI should look, behave, and read. Pairs with ui-tokens.md (colors/typography)
-and ui-registry.md (built components). Keep the storefront, account, and admin visually
-consistent — shared tokens and primitives, one set of conventions.
+How the Portfolio's UI should look, behave, and read. Pairs with ui-tokens.md
+(colors/typography) and ui-registry.md (built components). Keep every section visually
+consistent — shared tokens and primitives, one set of conventions, one dark theme.
 
 ---
 
 ## Layout
 
-- **Storefront** content sits in a centered container (max ~1280–1440px) with comfortable
-  horizontal padding; sections are generously spaced (furniture shopping is visual — let
-  images breathe).
-- **Top navbar** on all storefront/account pages: logo, category menu, search, cart (with
-  live item-count badge), account. Sticky on scroll.
-- **Footer** with shop links, support, and legal.
-- **Admin** uses a persistent left **sidebar** (`--sidebar-*` tokens) + a top bar; content
-  area is a padded surface.
-- Build mobile-first; the navbar collapses to a menu/drawer, the catalog filters move into a
-  sheet, and grids reflow to fewer columns.
+- The page is a **single, centered column**: content sits in a centered container
+  (max ~1440px) with comfortable horizontal padding; sections are generously spaced and stack
+  vertically down the page.
+- **Sticky navbar** on every viewport: logo on the left, a centered pill of section links, and
+  a "Download CV" CTA on the right. It stays fixed on scroll over the dark background.
+- **Navigation is anchor-scroll:** nav links jump to on-page section ids (`#home`, `#work`,
+  `#experience`, `#contact`, …), not to separate routes. The active section is reflected in the
+  navbar as the user scrolls (scroll-spy, polish phase).
+- **Footer** closes the page: wordmark, a compact link set echoing the nav, social links, and a
+  copyright line.
+- Build **responsive**: on mobile the centered pill collapses or simplifies, grids reflow to
+  fewer columns, and the hero portrait + copy stack. Verify mobile, tablet, and desktop.
 
 ---
 
 ## Cards & Surfaces
 
-- Product cards and content panels use `bg-card` with `border border-border` and a `rounded-lg`
-  radius (from `--radius`); add a subtle shadow for raised elements.
-- Page background is `bg-background`; raised/muted panels use `bg-surface-raised` / `bg-muted`.
-- Product imagery is the hero of a card — keep card chrome quiet so photos carry the design.
+- Content panels (project cards, testimonial cards, timeline entries) use `bg-card` with
+  `border border-border` and a `rounded-lg`/`rounded-xl` radius (from `--radius`); add a subtle
+  shadow for raised elements.
+- Page background is `bg-background` (the dark charcoal base); raised/muted panels use
+  `bg-surface-raised` / `bg-muted`.
+- Let imagery and whitespace carry the design — keep card chrome quiet so the work stands out.
+  The hero portrait's green glow is the one deliberate accent flourish.
 
 ---
 
 ## Components (use shadcn primitives)
 
-- Build on the primitives in `src/shared/components/ui` (button, card, input, select, dialog,
-  sheet, table, pagination, tooltip, …). Don't hand-roll equivalents.
-- Promote a feature component to `shared/components` only once a second feature needs it.
-- Buttons: `primary` for the main action (add to cart, place order, save), a quiet/outline
-  variant for secondary actions, ghost for tertiary. One primary action per view.
-- Forms use the shared form-field components (label + control + error), driven by RHF + Zod.
+- Build on the primitives in `src/shared/components/ui` (button, card, input, label, textarea,
+  badge, …). Don't hand-roll equivalents.
+- Promote a section component to `shared/components` only once a second section needs it.
+- Buttons: `primary` for the main action (Download CV, Send message), an outline/quiet variant
+  for secondary actions (View work, View source), ghost for tertiary. One primary action per
+  view/section.
+- The contact form uses label + control + inline error; if it validates client-side, drive it
+  with RHF + Zod (optional — see code-standards.md).
 
 ---
 
 ## Color & Type Usage
 
-- Follow ui-tokens.md. Brand actions and active states use `primary` (ocean-green); `secondary`
-  (cyprus) for complementary emphasis. Feedback uses `success`/`warning`/`danger`/`info`.
-- Use the typography scale (`text-h1`…`text-h6`, `text-body-*`, `text-label-*`) rather than
-  arbitrary sizes. Headings establish hierarchy; body text stays at `text-body-base`.
+- Follow ui-tokens.md. Brand actions, links, and active states use `primary` (emerald-teal).
+  Feedback uses `success`/`warning`/`danger`/`info`. Everything sits on the dark base.
+- Use the typography scale (`text-display-*`, `text-h1`…`text-h6`, `text-body-*`,
+  `text-label-*`) rather than arbitrary sizes. The hero heading uses a display size; section
+  headings use `text-h2`/`text-h3`; body text stays at `text-body-base`.
 - Never hardcode hex or use raw Tailwind color classes.
 
 ---
 
-## Commerce-specific patterns
+## Section patterns
 
-- **Price** is prominent on cards and product detail; show a struck-through compare-at price
-  only when a real sale price exists.
-- **Stock state** is explicit: "In stock", "Only N left" (warning tone), "Out of stock"
-  (disabled add-to-cart).
-- **Variant selection** (colour/material/size) uses clearly labeled, keyboard-accessible
-  controls; selecting a variant updates price, stock, and the active image.
-- **Cart feedback** is immediate: adding to cart updates the navbar badge and confirms via a
-  toast or mini-cart — never a silent action.
-- **Ratings** use filled/empty stars plus the numeric average and review count.
-
----
-
-## AI shopping assistant (chat)
-
-- A persistent entry point (floating button or navbar action) opens a chat panel/drawer.
-- **Stream responses** — render tokens as they arrive (the backend streams over SSE); show a typing indicator while waiting, never a frozen spinner for the whole reply.
-- When the assistant returns products, render them as **the same `ProductCard`/result components** used elsewhere and link into product pages — don't invent a chat-only product layout.
-- Keep it scoped and honest: order lookups only work when signed in (prompt to log in otherwise); if the AI is unavailable, the panel shows a friendly fallback and the rest of the store keeps working.
-- No API keys or model calls on the client — the panel talks only to our `/assistant/chat` endpoint.
-
-The **admin AI insights** render as cards on the dashboard (trend, low-stock alert, action item), each with a short Claude-written summary; show an empty/fallback state when no insights are available.
+- **Hero:** display-size heading, a short supporting line, primary + secondary CTAs, and the
+  circular portrait with a green glow. It sets the tone — keep it uncluttered.
+- **Intro band:** a single confident statement in large type; pure typography on the dark
+  background, generous vertical padding.
+- **Recent work:** a responsive grid of project cards. Each card: thumbnail, title, short
+  description, tech tags (`Badge`), and links (live demo / source). Keep cards uniform in
+  height and chrome so the grid reads cleanly.
+- **Experience:** a vertical timeline; each entry shows role, company, dates, and a short
+  description. Consistent spacing and a clear connector line.
+- **Testimonials:** quote cards with the person's name and role/company. Equal-weight cards in
+  a row/grid.
+- **Contact:** the contact form (name, email, message) beside a block of direct contact info
+  and social links. The form is the page's clear final call to action.
 
 ---
 
-## Dark mode
+## States (where relevant)
 
-- Light/dark is driven by `next-themes` (class on `<html>`); every surface must use the semantic tokens so it adapts automatically — never hardcode a light-only colour.
-- Provide a visible theme toggle (navbar/account). Verify product imagery, badges, and the AI chat panel read well in both modes.
+The page is static, so most sections have no loading/error states. The states that matter:
 
----
-
-## States (never skip these)
-
-- **Empty states** for every list (empty cart, no orders, no wishlist, no search results):
-  short guiding text + a CTA back into the catalog.
-- **Loading**: skeletons for grids/detail, disabled buttons with a spinner for submits.
-- **Error**: human-readable message + a retry where it makes sense; never a raw error string.
+- **Contact form:** inline **validation errors** (what's wrong + how to fix), a disabled /
+  submitting state on the button, and a **success confirmation** after submit (or, for a
+  `mailto:` form, opening the mail client is the confirmation).
+- **Empty content:** authored `data/` arrays should not be empty in production, but a section
+  that maps over content should render nothing-gracefully (no broken layout) if its list is
+  empty.
+- **Images:** provide meaningful `alt` text; use `next/image` so thumbnails and the portrait
+  load well.
 
 ---
 
@@ -111,7 +110,7 @@ Prioritize clarity over marketing language.
 Buttons describe the action they perform.
 
 - ❌ Submit · Click here · Continue (when the action is unclear)
-- ✅ Add to cart · Place order · Save address · Track order
+- ✅ Send message · Download CV · View work · View source
 
 ### 3. Keep labels short
 
@@ -125,58 +124,59 @@ Form labels are concise.
 Tell the user **what went wrong** and **how to fix it**.
 
 - ❌ "Invalid input"
-- ✅ "Enter a valid email address." · "Password must contain at least 8 characters."
+- ✅ "Enter a valid email address." · "Message must be at least 10 characters."
 
 ### 5. Empty states guide the user
 
 - ❌ "No data found."
-- ✅ "Your cart is empty. Browse the catalog to get started." · "No orders yet. Place your first order to see it here."
+- ✅ "No projects to show yet, check back soon."
 
 ### 6. Success messages confirm completion
 
 - ❌ "Success!"
-- ✅ "Changes saved successfully" · "Order placed"
+- ✅ "Message sent" · "Thanks, I'll get back to you soon"
 
 ### 7. Avoid unnecessary punctuation
 
 No trailing periods in short UI text (buttons, labels, toasts). Periods are fine for longer
 sentences in descriptions/body copy.
 
-- ✅ Button: "Save changes" / ❌ "Save changes."
-- ✅ Toast: "Profile updated successfully" / ❌ "Profile updated successfully."
+- ✅ Button: "Send message" / ❌ "Send message."
+- ✅ Toast: "Message sent" / ❌ "Message sent."
 
 **Never use a long hyphen (em dash `—` or en dash `–`) in UI content.** Use a comma, or
 rewrite as a separate sentence.
 
-- ❌ "Free delivery on every order — no minimum."
-- ✅ "Free delivery on every order, no minimum."
+- ❌ "Building modern web experiences — with clean code."
+- ✅ "Building modern web experiences with clean code."
 
 ### 8. Maintain consistency
 
-Pick one term and use it everywhere — don't mix "Sign in / Sign out" with "Login / Logout".
+Pick one term and use it everywhere — don't mix "Send message" with "Submit" or "Contact me".
 
 ### 9. Use sentence case
 
 Sentence case for UI text (the modern default, used by Google/Microsoft).
 
-- ✅ "Create account" · "Forgot password?" · "Update profile"
-- ❌ "Create Account" · "Forgot Password?"
+- ✅ "Download CV" · "View work" · "Send message"
+- ❌ "Download Cv" · "View Work"
 
 ### 10. Reduce cognitive load
 
 Don't make users read more than necessary; write a single, refined thought.
 
-- ❌ "Everything you need to furnish every room, crafted with care and delivered to your door. Free shipping included."
-- ✅ "Quality furniture for every room, delivered free."
+- ❌ "I am a passionate, detail-oriented frontend developer who loves crafting beautiful, performant, accessible web experiences for clients of all sizes."
+- ✅ "I build scalable and user-focused web applications."
 
 ---
 
 ## Do Nots
 
-- **Never use a long hyphen (em dash `—` or en dash `–`) in UI content** (labels, buttons, toasts, headings, body copy). Use a comma, or rewrite as a separate sentence.
-- Never use raw Tailwind color classes (`bg-emerald-700`, `text-gray-600`) — use tokens only.
+- **Never use a long hyphen (em dash `—` or en dash `–`) in UI content** (labels, buttons,
+  headings, body copy). Use a comma, or rewrite as a separate sentence.
+- Never use raw Tailwind color classes (`bg-emerald-500`, `text-gray-400`) — use tokens only.
 - Never define colors in a config file — tokens live in `theme.css` (`@theme`).
-- Never ship a list/detail view without empty, loading, and error states.
-- Never make "add to cart" a silent action — always confirm.
-- Never show a raw error message to users.
-- Never put business logic in a `page.tsx` — compose feature components.
+- Never author a light-mode-only colour or add a theme toggle — the site is dark only.
+- Never add multi-page routing for sections — navigation is anchor-scroll on one page.
+- Never ship the contact form without validation, a submitting state, and a success message.
+- Never put business logic in a `page.tsx` — compose section components.

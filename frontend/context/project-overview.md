@@ -2,201 +2,149 @@
 
 ## About the Project
 
-**Homerio** is a furniture store with a brain — an online store for **home furniture**
-(sofas, beds, chairs, tables, storage, décor) with a **Claude-powered AI layer**. Shoppers
-browse a curated catalog, filter and sort within categories, open a product to choose a
-variant (colour / material / size), add it to a cart, and check out to place an order they
-can then track — or just **chat with an AI shopping assistant** that finds products, checks
-prices, and looks up their orders. Registered customers manage their profile, saved
-addresses, wishlist, and order history. The store team gets a lightweight admin surface to
-manage the catalog, inventory, and orders, plus an **AI insights dashboard** (Claude-generated
-sales trends, low-stock alerts, and action items). The UI is mobile-responsive with **light/
-dark mode**.
+**Portfolio** is a single-page **developer portfolio** for a frontend engineer. It is a
+focused marketing site whose one job is to present the developer's work, experience, and
+contact details in a way that earns a reply from a recruiter or a client. There is no
+account system, no catalog, no cart, no checkout, no dashboard, no AI. One page, scrolled
+top to bottom, with a sticky navbar whose links jump to the relevant section.
 
-This is a **monorepo** with two apps in one repository:
+This is a **frontend-only** application — a single Next.js app, no backend and no database.
+All content is authored in the codebase (typed mock/content files under each feature's
+`data/`) and rendered statically. The design is dark-themed (charcoal/teal) and the visual
+reference lives at `context/designs/nextdev-egbontech.vercel.app_.png`.
 
-- **`frontend/`** — Next.js 16 (App Router) storefront + account + admin UI, styled with
-  Tailwind CSS v4 and shadcn/ui.
-- **`backend/`** — NestJS REST API backed by PostgreSQL via Prisma.
+```
+frontend/        → Next.js 16 (App Router) + React 19 + Tailwind v4 + shadcn/ui
+```
 
-The frontend talks to the backend over REST (axios, cookie-based auth). All persistence,
-business rules, pricing, and order logic live in the NestJS backend; the frontend renders
-and orchestrates the experience.
+There is no `backend/`. The site holds no secrets and talks to no API of its own.
 
 ---
 
 ## The Problem It Solves
 
-Buying furniture online is high-consideration: shoppers want clear photos, real
-dimensions, material and colour options, honest stock and delivery expectations, and a
-checkout that doesn't lose them. Homerio gives customers a fast, trustworthy storefront —
-rich product detail, variant selection, a persistent cart, and transparent order tracking —
-while giving the store a single place to manage products, stock, and incoming orders.
+A recruiter or prospective client spends seconds deciding whether a developer is worth a
+conversation. This portfolio answers their questions in one scroll: *what does this person
+build, is the work any good, what have they done, do others vouch for them, and how do I
+reach them.* It is fast, legible, and consistent, and it ends on a clear call to make
+contact.
 
 ---
 
-## Pages
+## The Page
 
-### Storefront (public + customer)
-
-```
-/                        → Home: hero, featured categories, featured/new products, promos
-/products                → Catalog: grid with filters (category, price, material, colour), sort, pagination
-/products/[slug]         → Product detail: gallery, variants, price, stock, specs, reviews, add to cart
-/categories/[slug]       → Category landing → filtered catalog
-/search                  → Search results
-/cart                    → Cart: line items, quantities, totals
-/checkout                → Shipping address, contact, order summary, place order
-/orders/[orderNumber]    → Order confirmation + tracking
-```
-
-### Account (authenticated customer)
+One route — `/` — composed of these sections, top to bottom:
 
 ```
-/account                 → Overview
-/account/orders          → Order history
-/account/addresses       → Saved addresses (CRUD)
-/account/profile         → Profile + change password
-/account/wishlist        → Saved products
+Navbar         → logo, centered pill navigation, "Download CV" CTA (sticky)
+Hero           → "Building modern web experiences with clean code", CTAs,
+                 circular portrait with a green glow
+Intro band     → "I build scalable and user-focused web applications"
+Recent Work    → "Some of my recent work" — project cards grid
+Experience     → "Experience that speaks volumes" — vertical timeline
+Testimonials   → "What people say about me" — testimonial cards
+Contact        → "Let's build something great" — contact form + contact info / socials
+Footer         → wordmark, nav, socials, copyright
 ```
 
-### Auth
-
-```
-/login                   → Email + password sign in
-/register                → Create account
-/forgot-password         → Request reset
-/reset-password          → Set new password
-```
-
-### Admin (store team, role-gated)
-
-```
-/admin                   → Dashboard (sales, orders, low-stock)
-/admin/products          → Product list + create/edit (variants, images, stock)
-/admin/categories        → Category management
-/admin/orders            → Order queue + status updates
-```
+The navbar links are **anchor links** to section ids on the same page (`#home`, `#work`,
+`#experience`, `#contact`, …) — not separate routes. Scrolling is the primary navigation.
 
 ---
 
 ## Navigation
 
-- **Storefront:** top navbar (logo, category menu, search, cart, account) + footer. Cart
-  shows a live item-count badge.
-- **Account:** simple sub-navigation (overview, orders, addresses, profile, wishlist).
-- **Admin:** persistent left sidebar (dashboard, products, categories, orders) + top bar.
+- **Navbar (sticky, top):** logo on the left, a centered pill containing the section links,
+  and a "Download CV" call to action on the right. On scroll it stays fixed; the active
+  section is reflected in the nav (scroll-spy, added in polish).
+- **Footer:** wordmark, a compact link set echoing the nav, social links, and a copyright
+  line.
+- No drawers, menus, modals, or multi-page routing in scope.
 
 ---
 
-## Core Customer Flow
+## Sections In Detail
 
-### Discover
+### Hero
 
-Home page surfaces featured categories and products. The catalog (`/products`) and category
-pages render a product grid with **filters** (category, price range, material, colour),
-**sort** (newest, price asc/desc, top rated), and **pagination**. Search matches product
-name, description, and category.
+Large heading ("Building modern web experiences with clean code"), a short supporting line,
+two CTAs (primary "Download CV" / contact, secondary "View work"), and a circular portrait
+with a green glow accent. This is the first impression and sets the dark teal tone.
 
-### Product detail (`/products/[slug]`)
+### Intro band
 
-- Image gallery (multiple images, zoom/lightbox).
-- **Variant selection** — colour / material / size; selecting a variant updates price,
-  stock status, and the active image.
-- Price, availability ("In stock" / "Only N left" / "Out of stock"), and delivery note.
-- Specs (dimensions, material, weight, assembly), full description.
-- Customer reviews (rating + text) and average rating.
-- **Add to cart** (quantity selector) and **add to wishlist**.
+A short, confident statement band ("I build scalable and user-focused web applications")
+that bridges the hero and the work. Pure typography on the dark background.
 
-### Cart (`/cart`)
+### Recent Work ("Some of my recent work")
 
-Persistent cart (server-backed for signed-in users, local for guests; merged on login).
-Line items show product, variant, unit price, quantity (editable), and line total. Shows
-subtotal, estimated shipping, and total. Proceeds to checkout.
+A responsive grid of project cards. Each card shows a project image/thumbnail, title, a
+short description, the tech used, and links (live demo / source). Content is authored in
+`data/`.
 
-### Checkout (`/checkout`)
+### Experience ("Experience that speaks volumes")
 
-- Shipping address (pick a saved address or enter a new one) and contact details.
-- Order summary with line items and totals.
-- **Place order** — creates the order in the backend. Payment is taken as a follow-up step
-  (see scope below); the order is created with a `PENDING` payment status.
+A vertical timeline of roles. Each entry shows the role, company, dates, and a short
+description of the work and impact.
 
-### Order tracking (`/orders/[orderNumber]`)
+### Testimonials ("What people say about me")
 
-Confirmation screen plus a status timeline (`PENDING → PAID → PROCESSING → SHIPPED →
-DELIVERED`, with `CANCELLED`). Visible in account order history.
+Cards with a quote, the person's name, and their role/company. Lightweight social proof.
 
-### Account & auth
+### Contact ("Let's build something great")
 
-Email/password registration and login; JWT issued by the backend as **HTTP-only cookies**.
-Customers manage profile, addresses, wishlist, and order history.
-
----
-
-## Lead Domain Model (high level)
-
-Detailed Prisma schema lives in **architecture.md**. The core entities:
-
-- **User** (role: `CUSTOMER` / `ADMIN`) with **Addresses**.
-- **Category** (self-referential for sub-categories) → **Product**.
-- **Product** → **ProductImage** and **ProductVariant** (sku, colour, material, size,
-  price, stock).
-- **Cart** → **CartItem** (references a variant).
-- **Order** → **OrderItem** (price/labels snapshotted at purchase time).
-- **Review** and **WishlistItem**.
+A contact form (name, email, message) paired with direct contact information and social
+links. The form is the only form in the app; until a submission backend is specified it can
+be a no-op or a `mailto:` (see architecture.md / code-standards.md). The CTA closes the page
+on a clear next step.
 
 ---
 
 ## Features In Scope
 
-- Home page: hero, featured categories, featured/new products, promo sections
-- Catalog with category filter, price/material/colour filters, sort, pagination
-- Product detail with image gallery, variant selection, specs, stock, reviews
-- Search across products
-- Cart (guest + authenticated, merged on login) with quantity edits and totals
-- Checkout with saved/new shipping address and order placement
-- Order confirmation and status tracking; order history
-- Customer accounts: profile, change password, addresses (CRUD), wishlist
-- Email/password auth with JWT HTTP-only cookies and silent refresh
-- Product reviews and ratings
-- **AI shopping assistant** (Claude): natural-language product search/filter, recommendations, and order lookup (signed-in), with streaming responses
-- **AI admin insights** (Claude): sales trends, low-stock alerts, and actionable recommendations on the admin dashboard
-- Real-time stock validation (cart and checkout reflect live inventory)
-- Light/dark mode (mobile-responsive)
-- Admin: product/variant/inventory management, categories, order status management
-- Role-based access (customer vs admin)
+- Single-page layout with a sticky navbar and anchor-scroll navigation
+- Hero with heading, CTAs, and a glowing circular portrait
+- Intro statement band
+- Recent work grid (project cards from authored content)
+- Experience timeline
+- Testimonials
+- Contact section: contact form + direct contact info and social links
+- Footer
+- Downloadable CV (static asset, e.g. `public/documents/cv.pdf`)
+- Dark theme throughout (charcoal/teal), responsive across mobile/tablet/desktop
+- Scroll-spy active-section highlight and tasteful scroll/entrance animations (polish)
 
 ---
 
-## Features Out of Scope (initial build)
+## Features Out of Scope
 
-- **Payments / checkout gateway** — no Stripe, PayPal, or any payment SDK. Checkout creates a
-  `PENDING` / `UNPAID` order fulfilled manually by the store team. Deliberately kept simple.
-- Multi-vendor / marketplace sellers (single store only)
-- Internationalization, multi-currency, tax/VAT engines
-- Recommendation engine / personalization
-- Returns/RMA workflow, gift cards, loyalty points
-- Native mobile app
-- Real-time chat / live support
+- Any backend, database, or REST API of its own
+- Authentication, accounts, or user data
+- E-commerce of any kind (catalog, cart, checkout, orders, payments)
+- AI / chat / assistants
+- A blog or CMS-driven content (content is authored in the codebase)
+- A light/dark theme toggle — the site is **dark only**
+- Multi-page routing (the portfolio is one page)
 
 ---
 
-## Target Users
+## Target Audience
 
-- **Shoppers** — people furnishing a home who want clear product info, variant choices,
-  and a smooth, trustworthy checkout.
-- **Store team (admin)** — staff who manage the catalog, stock levels, and fulfil orders.
+- **Recruiters and hiring managers** — scanning quickly for relevant work, experience, and a
+  way to make contact.
+- **Prospective clients** — evaluating whether the developer can deliver the kind of web work
+  they need.
 
 ---
 
 ## Success Criteria
 
-- A shopper can go from the home page to a placed order in a few minutes.
-- Catalog filtering, sorting, and pagination return correct results quickly.
-- Product detail clearly communicates variants, real dimensions, price, and stock.
-- The cart survives navigation and login (guest cart merges into the account cart).
-- Checkout reliably creates an order with correct totals and an address snapshot.
-- Customers can track order status and review past orders.
-- Admins can create/edit products with variants, images, and stock, and advance order status.
-- Auth is secure (HTTP-only cookies, hashed passwords) and sessions refresh silently.
-- UI is visually consistent across storefront, account, and admin (shared tokens/components).
+- The page loads fast and reads clearly from hero to contact in a single scroll.
+- The navbar stays accessible and its links jump to the right sections; the active section is
+  reflected as the user scrolls.
+- Recent work communicates what was built, the tech used, and where to see it.
+- The experience timeline and testimonials build credibility at a glance.
+- The contact section makes it obvious how to get in touch (form + direct info + socials).
+- The CV downloads correctly.
+- The layout is visually consistent (shared tokens and components) and responsive on mobile,
+  tablet, and desktop, in the dark theme.

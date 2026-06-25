@@ -12,7 +12,7 @@ export function Logo({ className, href = "/" }: Props) {
   return (
     <Link
       href={href}
-      aria-label="Dealport home"
+      aria-label="Portfolio home"
       className={cn(
         "group inline-flex items-center gap-3 text-h2 font-extrabold tracking-tight text-primary",
         className
